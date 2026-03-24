@@ -20,6 +20,9 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Test API connectivity
+        run: curl -sf --max-time 10 "https://fapi.binance.com/fapi/v1/ping" && echo "API reachable" || echo "API blocked from this runner"
+
       - name: Fetch funding data
         run: python scripts/update_funding.py
 
