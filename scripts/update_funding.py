@@ -90,12 +90,26 @@ def git_push() -> None:
         print("[INFO] Git push disabled (ENABLE_GIT_PUSH != true)")
         return
 
+    token = os.environ.get("GITHUB_TOKEN", "")
     user = os.environ.get("GIT_USER_NAME", "funding-bot")
     email = os.environ.get("GIT_USER_EMAIL", "funding-bot@users.noreply.github.com")
     branch = os.environ.get("GIT_BRANCH", "main")
 
     def run(cmd: list[str]) -> subprocess.CompletedProcess:
         return subprocess.run(cmd, cwd=REPO_ROOT, capture_output=True, text=True)
+
+    # Set authenticated remote URL if token is provided
+    if token:
+        origin = run(["git", "remote", "get-url", "origin"])
+        url = origin.stdout.strip()
+        # Replace https://github.com/... with https://x-access-token:{token}@github.com/...
+        if url.startswith("https://") and "github.com" in url:
+            repo_path = url.split("github.com/", 1)[-1]
+            auth_url = f"https://x-access-token:{token}@github.com/{repo_path}"
+            run(["git", "remote", "set-url", "origin", auth_url])
+            print("[INFO] Remote URL updated with token auth")
+    else:
+        print("[WARN] GITHUB_TOKEN not set — push may fail without auth")
 
     run(["git", "config", "user.name", user])
     run(["git", "config", "user.email", email])

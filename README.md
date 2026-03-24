@@ -30,6 +30,7 @@ Einfach als Cron Job in Kinsta eintragen (z.B. alle 5 Minuten).
 | Variable | Beschreibung | Default |
 |---|---|---|
 | `ENABLE_GIT_PUSH` | `true` aktiviert auto-commit & push | *(deaktiviert)* |
+| `GITHUB_TOKEN` | GitHub Personal Access Token (für Push-Auth) | *(keiner)* |
 | `GIT_USER_NAME` | Git-Commit-Autor Name | `funding-bot` |
 | `GIT_USER_EMAIL` | Git-Commit-Autor E-Mail | `funding-bot@users.noreply.github.com` |
 | `GIT_BRANCH` | Branch für Push | `main` |
