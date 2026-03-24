@@ -1,1 +1,1 @@
-worker: python scripts/update_funding.py
+worker: echo "Use Kinsta Cron Jobs instead. This app is not meant to run as a persistent worker."
