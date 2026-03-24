@@ -1,12 +1,13 @@
 # Binance BTCUSDT Funding Data
 
-Automatischer Abruf der Binance USD-M Futures **BTCUSDT** Funding-Daten via GitHub Actions.
+Automatischer Abruf der Binance USD-M Futures **BTCUSDT** Funding-Daten.  
+Läuft als Kinsta Cron Job und pusht die CSV optional zurück ins GitHub-Repo.
 
 ## Was passiert hier?
 
-- Ein Python-Script ruft alle 5 Minuten die aktuelle Funding-Rate von der Binance Futures API ab.
+- `scripts/update_funding.py` ruft die aktuelle Funding-Rate von der Binance Futures API ab.
 - Die Daten werden in [`data/binance_btcusdt_funding.csv`](data/binance_btcusdt_funding.csv) geschrieben (eine Zeile = aktueller Stand).
-- Ein GitHub-Actions-Workflow committet und pusht die CSV automatisch, wenn sich die Daten geändert haben.
+- Optional: das Script committet und pusht die CSV automatisch zurück ins Repo.
 
 ## Aktualisierte Datei
 
@@ -14,11 +15,26 @@ Automatischer Abruf der Binance USD-M Futures **BTCUSDT** Funding-Daten via GitH
 |---|---|
 | `data/binance_btcusdt_funding.csv` | Aktuelle Funding-Daten (markPrice, fundingRate, nextFundingTime, …) |
 
-## Workflow manuell starten
+## Kinsta Cron Job
 
-1. Im Repo auf **Actions** klicken.
-2. Links den Workflow **Update Binance Funding** auswählen.
-3. Rechts auf **Run workflow** → **Run workflow** klicken.
+Cron-Kommando:
+
+```
+python scripts/update_funding.py
+```
+
+Einfach als Cron Job in Kinsta eintragen (z.B. alle 5 Minuten).
+
+## Environment Variables (optional, für Git-Push)
+
+| Variable | Beschreibung | Default |
+|---|---|---|
+| `ENABLE_GIT_PUSH` | `true` aktiviert auto-commit & push | *(deaktiviert)* |
+| `GIT_USER_NAME` | Git-Commit-Autor Name | `funding-bot` |
+| `GIT_USER_EMAIL` | Git-Commit-Autor E-Mail | `funding-bot@users.noreply.github.com` |
+| `GIT_BRANCH` | Branch für Push | `main` |
+
+Wenn `ENABLE_GIT_PUSH` nicht gesetzt ist, wird nur die lokale CSV aktualisiert.
 
 ## Datenquelle
 
@@ -28,7 +44,9 @@ Binance USD-M Futures Premium Index API:
 ## Projektstruktur
 
 ```
-scripts/update_funding.py          # Abruf-Script (nur Standardbibliothek)
+scripts/update_funding.py          # Haupt-Script (nur Standardbibliothek)
 data/binance_btcusdt_funding.csv   # CSV mit aktuellen Funding-Daten
-.github/workflows/update_funding.yml  # GitHub Actions Workflow (alle 5 Min)
+requirements.txt                   # Nixpacks Python-Erkennung
+runtime.txt                        # Python-Version (3.11)
+Procfile                           # Kinsta worker-Prozess
 ```

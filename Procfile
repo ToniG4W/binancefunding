@@ -1,1 +1,1 @@
-web: python test_binance.py
+worker: python scripts/update_funding.py
